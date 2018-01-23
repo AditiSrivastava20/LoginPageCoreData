@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>use library</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>use microphone</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>use media</string>
-	<key>NSCameraUsageDescription</key>
-	<string>use camera</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -28,6 +20,33 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>openweathermap.org</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>use media</string>
+	<key>NSCameraUsageDescription</key>
+	<string>use camera</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>use</string>
+	<key>NSLocationUsageDescription</key>
+	<string>The app needs to acess your current location.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Acess User Location</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>use microphone</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>use library</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

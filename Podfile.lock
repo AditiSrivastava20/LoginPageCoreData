@@ -1,3 +1,21 @@
-PODFILE CHECKSUM: 4185b7ed0784aa23a8b608dd7e9f06f2e2e54b8d
+PODS:
+  - Alamofire (4.6.0)
+  - IQKeyboardManagerSwift (5.0.7)
+  - RAMAnimatedTabBarController (3.0.1)
+  - SwiftyJSON (4.0.0)
+
+DEPENDENCIES:
+  - Alamofire
+  - IQKeyboardManagerSwift
+  - RAMAnimatedTabBarController
+  - SwiftyJSON
+
+SPEC CHECKSUMS:
+  Alamofire: f41a599bd63041760b26d393ec1069d9d7b917f4
+  IQKeyboardManagerSwift: 30fb3a61de1af53a95e02b80fb54ed0a19d5ede5
+  RAMAnimatedTabBarController: 78bafa7a1c1b162f0d4a86a936c0d1ee4a06ffcc
+  SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
+
+PODFILE CHECKSUM: 636c41243c4eff39e65c2fef497b1653d0ecae16
 
 COCOAPODS: 1.2.0

@@ -8,28 +8,48 @@
 
 import UIKit
 import CoreData
+import CoreLocation
+import Alamofire
+import SwiftyJSON
 
 
 class SignupViewController: UIViewController,UITextFieldDelegate, UIImagePickerControllerDelegate,
-UINavigationControllerDelegate {
-    let nextField = [1:2, 2:3, 3:4]
+UINavigationControllerDelegate, CLLocationManagerDelegate {
     
+    @IBOutlet var weatherIcon: UIImageView!
+    
+    let nextField = [1:2, 2:3, 3:4]
+    var activeField: UITextField?
     @IBOutlet var pickImage: UIButton!
     @IBOutlet var showImage: UIImageView!
     @IBOutlet weak var txt1: UITextField!
     @IBOutlet weak var txt2: UITextField!
     @IBOutlet weak var txt3: UITextField!
     @IBOutlet weak var txt4: UITextField!
+    @IBOutlet var cityLabel: UILabel!
     @IBOutlet weak var signupView: UIView!
     @IBOutlet weak var loginView: UIView!
     @IBOutlet weak var btnsignup: UIButton!
     @IBOutlet weak var btnlogin: UIButton!
     var message = ""
     var imagePicker = UIImagePickerController()
+   
+    let WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"
+    let APP_ID = "e72ca729af228beabd5d20e3b7749713"
+    let locationManager = CLLocationManager()
+    let locationDataModel = WeatherDataModel()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+        
        
+
         showImage.layer.masksToBounds = false
         showImage.layer.cornerRadius = showImage.frame.height/2
         showImage.clipsToBounds = true
@@ -188,9 +208,87 @@ UINavigationControllerDelegate {
         
         
     }
+    @IBAction func getLocation(_ sender: Any) {
+        
+        
+        
+       
+    }
+    func getWeatherData(url: String, parameters: [String: String]) {
+        
+        Alamofire.request(url, method: .get, parameters: parameters).responseJSON {
+            response in
+            if response.result.isSuccess {
+                print("Success! Got the weather data")
+                
+                let weatherJSON : JSON = JSON(response.result.value!)
+                
+                print(weatherJSON)
+                
+                self.updateWeatherData(json: weatherJSON)
+            }
+            else {
+                print("Error \(response.result.error)")
+                self.cityLabel.text = "Connection Issues"
+            }
+        }
+        
+    }
+    func updateWeatherData(json : JSON) {
+        
+        if let tempResult = json["main"]["temp"].double {
+            
+            locationDataModel.temperature = Int(tempResult - 273.15)
+            
+            locationDataModel.city = json["name"].stringValue
+            
+            locationDataModel.condition = json["weather"][0]["id"].intValue
+            
+            locationDataModel.weatherIconName = locationDataModel.updateWeatherIcon(condition: locationDataModel.condition)
+            
+            
+            updateUIWithWeatherData()
+            
+        }
+        else {
+            cityLabel.text = "City Unavailable"
+        }
+    }
+    
+    func updateUIWithWeatherData() {
+        
+        cityLabel.text = locationDataModel.city
+        weatherIcon.image = UIImage(named: locationDataModel.weatherIconName)
+        
+    }
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations[locations.count - 1]
+        if location.horizontalAccuracy > 0 {
+            
+            // locationManager.stopUpdatingLocation()
+            
+            print("longitude = \(location.coordinate.longitude), latitude = \(location.coordinate.latitude)")
+            
+            let latitude = String(location.coordinate.latitude)
+            let longitude = String(location.coordinate.longitude)
+            
+            let params : [String : String] = ["lat" : latitude, "lon" : longitude, "appid" : APP_ID]
+            
+            getWeatherData(url: WEATHER_URL, parameters: params)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+        cityLabel.text = "Location Unavailable"
+    }
+   
     
     @IBAction func loginback(_ sender: Any) {
-        _ = navigationController?.popViewController(animated: true)
+        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+        
+        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+        self.present(nextViewController, animated:true, completion:nil)
         
     }
        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -234,11 +332,35 @@ UINavigationControllerDelegate {
                     newUser.setValue(txt2.text, forKey: "phone")
                     newUser.setValue(txt3.text, forKey: "name")
                     newUser.setValue(txt4.text, forKey: "password")
-                    //newUser.setValue(UIImagePNGRepresentation(showImage.image!), forKey: "profilepic")
-//                    let img: NSData? =  newUser.value(forKey: "profilepic") as? NSData
-//                     showImage.image = (img) as? UIImage
-                   UserDefaults.standard.register(defaults: ["key":UIImageJPEGRepresentation(showImage.image!, 100)!])
-                UserDefaults.standard.set(UIImageJPEGRepresentation(showImage.image!, 100), forKey: "key")
+                
+                var dict = Singleton.sharedInstance.userImageDic
+//                dic?[txt1.text ?? ""] = UIImageJPEGRepresentation(showImage.image!, 100)
+//                Singleton.sharedInstance.userImageDic = dic
+                
+                if dict == nil {
+                    var dict1 = [String:Data]()
+                    dict1[txt1.text ?? ""] = UIImageJPEGRepresentation(showImage.image!, 100)
+                    dict = dict1
+                }else{
+                    dict?[txt1.text ?? ""] = UIImageJPEGRepresentation(showImage.image!, 100)
+                }
+                
+                Singleton.sharedInstance.userImageDic = dict
+                
+              
+//                   UserDefaults.standard.register(defaults: ["key":UIImageJPEGRepresentation(showImage.image!, 100)!])
+//                UserDefaults.standard.set(UIImageJPEGRepresentation(showImage.image!, 100), forKey: "key")
+//                let kUserDefault = UserDefaults.standard
+//
+//                kUserDefault.set([(showImage.image!, 100)], forKey: "keyarray")
+//                kUserDefault.synchronize()
+                let vc = self.storyboard?.instantiateViewController(withIdentifier: "UserDetailsViewController") as! UserDetailsViewController
+                self.navigationController?.pushViewController(vc, animated: true)
+                vc.number = txt2.text
+                vc.password = txt3.text
+                vc.name = txt1.text
+                vc.email = txt2.text
+                
                 
                 do {
                         try context.save()
@@ -287,6 +409,9 @@ UINavigationControllerDelegate {
             alertController1.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alertController1, animated: true, completion: nil)
         }
+       
+    }
+    
     }
     func isValidInput(Input:String) -> Bool
     {
@@ -323,5 +448,9 @@ UINavigationControllerDelegate {
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailTest.evaluate(with: testStr)
     }
-}
+  
+    
 
+    
+
+      

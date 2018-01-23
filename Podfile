@@ -7,5 +7,11 @@ target 'LoginPage' do
 
   # Pods for LoginPage
 
- pod 'Disk'
+
+ pod 'IQKeyboardManagerSwift'
+ pod 'Alamofire'
+
+ pod 'SwiftyJSON'
+ pod 'RAMAnimatedTabBarController'
+
 end

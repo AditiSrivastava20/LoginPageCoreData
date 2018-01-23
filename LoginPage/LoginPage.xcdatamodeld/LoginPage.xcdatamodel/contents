@@ -5,6 +5,7 @@
         <attribute name="placement" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="UserFields" representedClassName="UserFields" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
@@ -12,7 +13,7 @@
         <attribute name="profilepic" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
     </entity>
     <elements>
-        <element name="UserFields" positionX="-63" positionY="-18" width="128" height="120"/>
         <element name="Image" positionX="-63" positionY="18" width="128" height="75"/>
+        <element name="UserFields" positionX="-63" positionY="-18" width="128" height="135"/>
     </elements>
 </model>

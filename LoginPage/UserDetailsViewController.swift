@@ -9,40 +9,75 @@
 import UIKit
 import CoreData
 
-class UserDetailsViewController: UIViewController {
 
+
+class UserDetailsViewController: UIViewController {
+    
+    var userModel: LoginViewController?
+    var context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
     @IBOutlet var profilepicOfUser: UIImageView!
     @IBOutlet var contactUser: UILabel!
     @IBOutlet weak var passwordOfuser: UILabel!
     @IBOutlet weak var nameOfUser: UILabel!
     @IBOutlet weak var emailofUser: UILabel!
-    var context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var password:String?
+    var name: String?
+    var email:String?
+    var number: String?
+    
     var myStringValue : String?
+  
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.myStringValue = UserDefaults.standard.value(forKey: "Email") as? String
+
+        contactUser.text = number
+        passwordOfuser.text = password
+        nameOfUser.text = name
+        emailofUser.text = email
         
         profilepicOfUser.layer.masksToBounds = false
         profilepicOfUser.layer.cornerRadius = profilepicOfUser.frame.height/2
         profilepicOfUser.clipsToBounds = true
         
+       
         
         // Do any additional setup after loading the view.
     }
-
-   
+  
+  
+  
+    
+  
     override func viewWillAppear(_ animated: Bool) {
-        showData()
+        
+       
+//        if !Singleton.sharedInstance.brandName.isEmpty{
+//            print(Singleton.sharedInstance.brandName)
+//
+//        }else{
+//
+//            print("Empty")
+//        }
+       showData()
+        
         super.viewWillAppear(animated)
     }
     override func didReceiveMemoryWarning()
     {
         super.didReceiveMemoryWarning()
     }
+  
+
     func showData()
     {
+
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "UserFields")
-        request.predicate = NSPredicate (format: "name == %@", myStringValue!)
+        request.predicate = NSPredicate (format: "name == %@", myStringValue ?? "")
         do
         {
             let result = try context.fetch(request)
@@ -52,17 +87,16 @@ class UserDetailsViewController: UIViewController {
                 let agedata = (result[0] as AnyObject).value(forKey: "password") as! String
                 let emaildata = (result[0] as AnyObject).value(forKey: "email") as! String
                 let contactdata = (result[0] as AnyObject).value (forKey: "phone") as! String
-                let imageData = UserDefaults.standard.value(forKey: "key") as! Data
-                let imageFromData = UIImage(data: imageData)!
-                profilepicOfUser.image = imageFromData
-//                let picdata = (result[0] as AnyObject).value (forKey: "profilepic") as! UIImage
-             //let picdata = UIImagePNGRepresentation(profilepicOfUser.image!) as UIImage?
-//                profilepicOfUser.image = UIImage(data: picdata! as Data)
+//                let imageData = UserDefaults.standard.value(forKey: "key") as! Data
+//                let imageFromData = UIImage(data: imageData)!
+                //profilepicOfUser.image = imageFromData
+                let image = UIImage(data: (Singleton.sharedInstance.userImageDic?[emaildata]!)!)
+                profilepicOfUser.image = image
                 nameOfUser.text = nameData
                 passwordOfuser.text = agedata
                 emailofUser.text = emaildata
                 contactUser.text = contactdata
-//                profilepicOfUser.image = picdata
+
             }
         }
         catch {
@@ -71,7 +105,5 @@ class UserDetailsViewController: UIViewController {
         }
     }
 }
+////////////////////////////////////////
 
-    
-
-  
